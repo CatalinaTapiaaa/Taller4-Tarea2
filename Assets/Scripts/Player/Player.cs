@@ -8,10 +8,9 @@ public class Player : MonoBehaviour
     public Lengua lengua;
     public Transform pivotPlayer;
     public Transform pivotAtaque;
+    public TrailRenderer[] trails;
 
     [Header("Salto")]
-    public float ancho;
-    public float largo;
     [Space]
     public float fuerzaSalto;
     public float fuerzaSaltoMaximo;
@@ -21,14 +20,19 @@ public class Player : MonoBehaviour
     Rigidbody2D rb2D;
     Vector2 startPos;
     float maxTapTime = 0.2f;
-    float tapTime, salto;
+    public float tapTime, salto;
     bool pressed;
     public bool saltar, noSaltar, noAtacar;
+    float escala1, escala2;
 
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
         noSaltar = true;
+        foreach (TrailRenderer trail in trails)
+        {
+            trail.enabled = false;
+        }
     }
 
     void Update()
@@ -47,26 +51,33 @@ public class Player : MonoBehaviour
                 }
                 else if (dedo.phase == TouchPhase.Ended)
                 {
-                    pressed = false;
-                    pivotPlayer.localScale = new Vector2(1, 1);
+                    pressed = false;                  
 
                     if (saltar)
                     {
+                        pivotPlayer.localScale = new Vector2(1, 1);
+
                         Saltar();
                         salto = 0;
                         saltar = false;
-                        noSaltar = false;
+                        noSaltar = true;
                         noAtacar = false;
-                    }
+                    }                    
 
                     if (tapTime < maxTapTime)
                     {
-                        Vector3 deltaPos = dedo.position - startPos;
+                        Vector3 deltaPos = dedo.position;
+                        Vector3 inicio = deltaPos;
 
                         if (deltaPos.magnitude > 10)
                         {
                             if (!noAtacar)
                             {
+                                Vector3 dedoPosicion = inicio;
+                                dedoPosicion = Camera.main.ScreenToWorldPoint(dedoPosicion);
+                                Vector2 direccion = new Vector2(dedoPosicion.x - pivotAtaque.position.x, dedoPosicion.y - pivotAtaque.position.y);
+
+                                pivotAtaque.up = direccion;
 
                                 noAtacar = true;
                                 lengua.atacar = true;
@@ -87,9 +98,9 @@ public class Player : MonoBehaviour
                             Debug.Log("Presionando");
                             salto += Time.deltaTime;
 
-                            float escala = 0.1f * salto;
-                            float escalaX = Mathf.Min(ancho, pivotPlayer.localScale.x + escala);
-                            float escalaY = Mathf.Max(largo, pivotPlayer.localScale.y - escala);
+                            float escala = 0.01f * salto;
+                            float escalaX = Mathf.Min(1.5f, pivotPlayer.localScale.x + escala);
+                            float escalaY = Mathf.Max(0.5f, pivotPlayer.localScale.y - escala);
                             pivotPlayer.localScale = new Vector2(escalaX, escalaY);
 
                             saltar = true;
@@ -97,12 +108,13 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-        }
+        }      
     }
 
     void Saltar()
     {
         noSaltar = true;
+
 
         if (salto < fuerzaSaltoMaximo)
         {
@@ -122,8 +134,13 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Piso"))
         {
-            noSaltar = false;
             noAtacar = true;
+            noSaltar = false;
+
+            foreach (TrailRenderer trail in trails)
+            {
+                trail.enabled = false;
+            }
 
             if (reiniciar)
             {
@@ -140,7 +157,8 @@ public class Player : MonoBehaviour
         GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
 
         if (collision.gameObject.CompareTag("Piso"))
-        {
+        {                        
+
             if (reiniciar)
             {
                 if (moscas.Length == 0)
@@ -151,11 +169,17 @@ public class Player : MonoBehaviour
             }
         }
     }
-    private void OnCollisionExit2D(Collision2D collision)
+    void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Piso"))
         {
             noSaltar = true;
+
+            foreach (TrailRenderer trail in trails)
+            {
+                trail.enabled = true;
+            }
         }
     }
+  
 }

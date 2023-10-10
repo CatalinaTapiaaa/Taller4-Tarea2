@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Mosca : MonoBehaviour
 {
-    bool muerte;
+    public bool muerte ;
+  
 
-    private void Update()
+    void Update()
     {
         if (muerte)
         {
             Destroy(gameObject);
         }
+
+       
     }
+
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -20,5 +24,6 @@ public class Mosca : MonoBehaviour
         {
             muerte = true;
         }
-    }    
+    }
+
 }
