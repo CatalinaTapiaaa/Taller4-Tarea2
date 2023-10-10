@@ -4,183 +4,145 @@ using UnityEngine;
 
 public class LevelCreator : MonoBehaviour
 {
-    public Player player;
-    public int cantidadPinchos, cantidadMoscas;
-    [Space]
-    public Transform[] pivotDe;
-    public Transform[] pivotIz;
     public Transform[] pivot;
-    [Space]
+    public Transform pivotDe;
+    public Transform pivotIz;
     public GameObject pincho;
     public GameObject moscas;
-    [Header("Transicion")]
-    public float posicion;
-    public float velocidad;
-    public float tiempoAni;
-    public bool crearNivel, cerrarNivel;
-
-    [Header("Puntuacion")]
+    [Space]
+    public BarraProgreso barraProgreso;
+    public Player player;
     public GameObject componente;
     public Controlador controlador;
-
+    [Space]
+    public bool crearNivel;
+    public bool cerrarNivel;
+    [Space]
+    public float posicion;
+    public float velocidad; 
 
     List<int> usedPivots = new List<int>();
-    float[] inicioDe, inicioIz;
-    float t1, t2, t3, t4;
     bool abrir, cerrar, spawn;
+    int cantidadPinchos, cantidadMoscas;
 
     void Start()
     {
-        crearNivel = true;
-
-        inicioDe = new float[pivotDe.Length];
-        inicioIz = new float[pivotIz.Length];
-
-        for (int i = 0; i < pivotDe.Length; i++)
-        {
-            inicioDe[i] = pivotDe[i].position.x;
-            inicioIz[i] = pivotIz[i].position.x;
-        }
+        cerrarNivel = true; 
     }
 
     void Update()
     {
         componente = GameObject.Find("CONTROLADOR");
         controlador = componente.GetComponent<Controlador>();
-        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
-
-        if (spawn)
-        {
-            Spawn();
-            spawn = false;
-        }
 
         if (crearNivel)
         {
-            player.stop = true;
+            if (controlador.puntuacion == 0)
+            {
+                cantidadMoscas = 1;
+                cantidadPinchos = 0;
+            }
+            if (controlador.puntuacion == 5)
+            {
+                cantidadMoscas = 2;
+                cantidadPinchos = 2;
+            }
+            if (controlador.puntuacion == 10)
+            {
+                cantidadMoscas = 3;
+                cantidadPinchos = 4;
+            }
+            if (controlador.puntuacion == 15)
+            {
+                cantidadMoscas = 4;
+                cantidadPinchos = 6;
+            }
+           
             abrir = true;
-            cerrar = false;
             spawn = true;
+            player.stop = true;
+            barraProgreso.activar = true;
+            barraProgreso.todasMoscas = true;
             crearNivel = false;
+        }
+        if (spawn)
+        {
+            SpawnObj();
+            spawn = false;
         }
         if (cerrarNivel)
         {
-            player.stop = true;
-            abrir = false;
             cerrar = true;
+            player.stop = true;
             cerrarNivel = false;
         }
 
         if (abrir)
         {
-            t1 += Time.deltaTime;
-            t2 = 0;
-            t3 = 0;
+            Vector3 abrirDe = new Vector2(-posicion, pivotDe.position.y);
+            Vector3 abrirIz = new Vector2(posicion, pivotIz.position.y);
 
-            for (int i = 0; i < pivotDe.Length; i++)
+            pivotDe.position = Vector3.MoveTowards(pivotDe.position, abrirDe, velocidad * Time.deltaTime);
+            pivotIz.position = Vector3.MoveTowards(pivotIz.position, abrirIz, velocidad * Time.deltaTime);
+
+            if (pivotDe.position == abrirDe)
             {
-                float tiempoObjetivo = tiempoAni * (i + 1);
-
-                if (t1 >= tiempoObjetivo)
-                {
-                    Vector2 abrirDe = new Vector2(-posicion, pivotDe[i].position.y);
-                    Vector2 abrirIz = new Vector2(posicion, pivotIz[i].position.y);
-
-                    pivotDe[i].position = Vector3.MoveTowards(pivotDe[i].position, abrirDe, velocidad * Time.deltaTime);
-                    pivotIz[i].position = Vector3.MoveTowards(pivotIz[i].position, abrirIz, velocidad * Time.deltaTime);
-                }
-                if (i == pivotDe.Length - 1)
-                {
-                    t4 += Time.deltaTime;
-                    if (t4 >= tiempoAni)
-                    {
-                        cerrar = false;
-                        player.stop = false;
-                    }
-                }
-            }            
+                abrir = false;
+                player.stop = false;
+                player.reiniciar = true;
+            }
         }
         if (cerrar)
         {
-            t2 += Time.deltaTime;
-            t1 = 0;
-            t4 = 0;
+            barraProgreso.activar = false;
+            Vector3 cerrarDe = new Vector2(-2.5f, pivotDe.position.y);
+            Vector3 cerrarIz = new Vector2(2.5f, pivotIz.position.y);
 
-            for (int i = 0; i < pivotDe.Length; i++)
+            pivotDe.position = Vector3.MoveTowards(pivotDe.position, cerrarDe, velocidad * Time.deltaTime);
+            pivotIz.position = Vector3.MoveTowards(pivotIz.position, cerrarIz, velocidad * Time.deltaTime);
+
+            if (pivotDe.position == cerrarDe)
             {
-                float tiempoObjetivo = tiempoAni * (i + 1);
-
-                if (t2 >= tiempoObjetivo)
-                {
-                    Vector3 cerrarDe = new Vector2(inicioDe[i], pivotDe[i].position.y);
-                    Vector3 cerrarIz = new Vector2(inicioIz[i], pivotIz[i].position.y);
-
-                    pivotDe[i].position = Vector3.MoveTowards(pivotDe[i].position, cerrarDe, velocidad * Time.deltaTime);
-                    pivotIz[i].position = Vector3.MoveTowards(pivotIz[i].position, cerrarIz, velocidad * Time.deltaTime);
-
-                    if (pivotIz[i].position == cerrarIz)
-                    {
-                        foreach (Transform child in pivotIz[i])
-                        {
-                            if (child.position == cerrarIz)
-                            {
-                                Destroy(child.gameObject);
-                            }
-                        }
-                        foreach (Transform child in pivotDe[i])
-                        {
-                            if (child.position == cerrarDe)
-                            {
-                                Destroy(child.gameObject);
-                            }
-                        }
-                    }
-                    if (i == pivotDe.Length - 1)
-                    {
-                        t3 += Time.deltaTime;
-                        if (t3 >= tiempoAni)
-                        {
-                            cerrar = false;
-                            player.stop = false;
-                        }
-                    }
-                }                  
-            }            
-        }        
+                crearNivel = true;
+                Destruir();
+                cerrar = false;
+            }
+        }      
     }
 
-    void Spawn()
+    void Spawn(GameObject prefab, int amount)
+    {       
+        for (int i = 0; i < amount; i++)
+        {
+            int aleatorio = 0;
+            do
+            {
+                aleatorio = Random.Range(0, pivot.Length);
+            } while (usedPivots.Contains(aleatorio));
+
+            usedPivots.Add(aleatorio);
+
+            Vector3 spawnPosition = pivot[aleatorio].position;
+            Quaternion spawnRotation = pivot[aleatorio].rotation;
+            GameObject newObj = Instantiate(prefab, spawnPosition, spawnRotation);
+            newObj.transform.SetParent(pivot[aleatorio]);
+        }
+    }
+    void Destruir()
     {
-        for (int i = 0; i < cantidadPinchos; i++)
+        foreach (Transform pivotObject in pivot)
         {
-            int aleatorio;
-            do
+            foreach (Transform child in pivotObject)
             {
-                aleatorio = Random.Range(0, pivot.Length);
-            } while (usedPivots.Contains(aleatorio));
-
-            usedPivots.Add(aleatorio);
-
-            Vector3 spawnPosition = pivot[aleatorio].position;
-            Quaternion spawnRotation = pivot[aleatorio].rotation;
-            GameObject newPincho = Instantiate(pincho, spawnPosition, spawnRotation);
-            newPincho.transform.SetParent(pivot[aleatorio]);
+                Destroy(child.gameObject);
+            }
         }
 
-        for (int i = 0; i < cantidadMoscas; i++)
-        {
-            int aleatorio;
-            do
-            {
-                aleatorio = Random.Range(0, pivot.Length);
-            } while (usedPivots.Contains(aleatorio));
-
-            usedPivots.Add(aleatorio);
-
-            Vector3 spawnPosition = pivot[aleatorio].position;
-            Quaternion spawnRotation = pivot[aleatorio].rotation;
-            GameObject newMosca = Instantiate(moscas, spawnPosition, spawnRotation);
-            newMosca.transform.SetParent(pivot[aleatorio]);
-        }
+        usedPivots.Clear();
+    }
+    void SpawnObj()
+    {
+        Spawn(pincho, cantidadPinchos);
+        Spawn(moscas, cantidadMoscas);
     }
 }

@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public LevelCreator levelCreator;
+    public Lengua lengua;
     public Transform pivotPlayer;
     public Transform pivotAtaque;
-    public Lengua lengua;
 
     [Header("Salto")]
     public float ancho;
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
     public float fuerzaSalto;
     public float fuerzaSaltoMaximo;
     public float velocidadAtaque;
-    public bool muerte, stop;
+    public bool stop, reiniciar;
 
     Rigidbody2D rb2D;
     Vector2 startPos;
@@ -32,11 +33,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (muerte)
-        {
-            Destroy(gameObject);
-        }
-
         if (!stop)
         {
             if (Input.touchCount > 0)
@@ -65,17 +61,13 @@ public class Player : MonoBehaviour
 
                     if (tapTime < maxTapTime)
                     {
-                        Vector2 deltaPos = dedo.position - startPos;
-                        Vector2 inicio = startPos;
+                        Vector3 deltaPos = dedo.position - startPos;
 
                         if (deltaPos.magnitude > 10)
                         {
                             if (!noAtacar)
                             {
-                                Vector3 dedoPosicion = inicio;
-                                dedoPosicion = Camera.main.ScreenToWorldPoint(dedoPosicion);
-                                Vector2 direccion = new Vector2(dedoPosicion.x - pivotAtaque.position.x, dedoPosicion.y - pivotAtaque.position.y);
-                                pivotAtaque.up = direccion;
+
                                 noAtacar = true;
                                 lengua.atacar = true;
                             }
@@ -105,7 +97,7 @@ public class Player : MonoBehaviour
                     }
                 }
             }
-        }              
+        }
     }
 
     void Saltar()
@@ -122,14 +114,48 @@ public class Player : MonoBehaviour
             rb2D.velocity = Vector2.zero;
             rb2D.AddForce(new Vector2(0, fuerzaSaltoMaximo * fuerzaSalto));
         }
-    }      
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
+        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
+
         if (collision.gameObject.CompareTag("Piso"))
         {
             noSaltar = false;
             noAtacar = true;
+
+            if (reiniciar)
+            {
+                if (moscas.Length == 0)
+                {
+                    levelCreator.cerrarNivel = true;
+                    reiniciar = false;
+                }
+            }
         }
     }
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
 
+        if (collision.gameObject.CompareTag("Piso"))
+        {
+            if (reiniciar)
+            {
+                if (moscas.Length == 0)
+                {
+                    levelCreator.cerrarNivel = true;
+                    reiniciar = false;
+                }
+            }
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Piso"))
+        {
+            noSaltar = true;
+        }
+    }
 }

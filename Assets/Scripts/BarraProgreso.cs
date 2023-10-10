@@ -7,38 +7,47 @@ public class BarraProgreso : MonoBehaviour
 {
     public LevelCreator levelCreator;
     public Image barra;
-    public float t1;
+    public float t1, current; //puntos
+    public bool todasMoscas, sumar, activar;
 
     [Header("Puntuacion")]
     public GameObject componente;
     public Controlador controlador;
 
-    bool reiniciaTiempo;
-    float barraMax;
+    public float barraMax;
 
     void Update()
     {
         componente = GameObject.Find("CONTROLADOR");
         controlador = componente.GetComponent<Controlador>();
 
-        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
-        barraMax = moscas.Length;
-            
-        if (t1 >= barraMax)
+        if (todasMoscas)
         {
-            controlador.puntuacion += 1;
-            reiniciaTiempo = true;
+            GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
+            barraMax = moscas.Length;
+            todasMoscas = false;
         }
 
-        if (reiniciaTiempo)
+        if (activar)
         {
-            t1 -= Time.deltaTime;
-            if (t1 <= 0)
+            if (t1 >= barraMax)
+            {              
+                t1 = 0;
+                current = 0;
+                controlador.puntuacion += 1;
+                activar = false;
+            }
+        }               
+
+        if (sumar)
+        {
+            t1 += Time.deltaTime;
+            if (t1 >= current)
             {
-                reiniciaTiempo = false;
+                sumar = false;
             }
         }
-
+   
         barra.fillAmount = t1 / barraMax;
     }
 }

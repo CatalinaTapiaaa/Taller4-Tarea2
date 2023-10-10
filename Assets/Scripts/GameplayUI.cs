@@ -30,7 +30,7 @@ public class GameplayUI : MonoBehaviour
     public void Reiniciar()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
     public void VolverMenu()
     {

@@ -8,6 +8,7 @@ TagManager:
   - Mosca
   - Pincho
   - Pared
+  - Lengua
   layers:
   - Default
   - TransparentFX
@@ -48,6 +49,9 @@ TagManager:
   - name: Player
     uniqueID: 2402143879
     locked: 0
+  - name: Lengua
+    uniqueID: 1023869991
+    locked: 0
   - name: Interface
     uniqueID: 1373588555
     locked: 0
@@ -56,4 +60,7 @@ TagManager:
     locked: 0
   - name: Derrota
     uniqueID: 1531761047
+    locked: 0
+  - name: Transicion
+    uniqueID: 2557776365
     locked: 0
