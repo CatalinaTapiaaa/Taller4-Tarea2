@@ -7,6 +7,7 @@ using TMPro;
 public class GameplayUI : MonoBehaviour
 {
     [Header("Texto")]
+    public TextMeshProUGUI punInterface;
 
     [Header("Paneles")]
     public GameObject panelPausa;
@@ -20,6 +21,7 @@ public class GameplayUI : MonoBehaviour
         componente = GameObject.Find("CONTROLADOR");
         controlador = componente.GetComponent<Controlador>();
 
+        punInterface.text = controlador.puntuacion.ToString("0");
     }
 
     public void Pausar()
