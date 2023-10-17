@@ -4,61 +4,40 @@ using UnityEngine;
 
 public class Progresion : MonoBehaviour
 {
-    public int cambiarDificultad;
-    [Header("Facil")]
-    public float tiempoSpawnBlancoFacil;
-    public int cantidadBlancoFacil;
-    [Space]
-    public float tiempoSpawnRojoFacil;
-    public int cantidadRojoFacil;
-    [Header("Normal")]
-    public float tiempoSpawnBlancoNormal;
-    public int cantidadBlancoNormal;
-    [Space]
-    public float tiempoSpawnRojoNormal;
-    public int cantidadRojoNormal;
-    [Header("Dificil")]
-    public float tiempoSpawnBlancoDificil;
-    public int cantidadBlancoDificil;
-    [Space]
-    public float tiempoSpawnRojoDificil;
-    public int cantidadRojoDificil;
-    [Space]
-    [Space]
+    public Spawn spawn;
     public GameObject componente;
     public Controlador controlador;
-    public Spawn spawn;
+    [Space]
+    [Header("Cantidad en pantalla")]
+    public int nivelFacil;
+    public int buenoFacil, maloFacil;
+    [Space]
+    public int nivelMedio;
+    public int buenoMedio, maloMedio;
+    [Space]
+    public int nivelDificil;
+    public int buenoDificil, maloDificil;
+
 
     void Update()
     {
         componente = GameObject.Find("CONTROLADOR");
         controlador = componente.GetComponent<Controlador>();
 
-        if (controlador.puntuacion == cambiarDificultad)
+        if (controlador.puntuacion == nivelFacil)
         {
-            spawn.tiempoSpawnBlanco = tiempoSpawnBlancoFacil;
-            spawn.cantidadItemBlanco = cantidadBlancoFacil;
-
-            spawn.tiempoSpawnRojo = tiempoSpawnRojoFacil;
-            spawn.cantidadItemRojo = cantidadRojoFacil;
+            spawn.cantidadEnPantallaBueno = buenoFacil;
+            spawn.cantidadEnPantallaMalo = maloFacil;
         }
-
-        if (controlador.puntuacion == cambiarDificultad * 2)
+        if (controlador.puntuacion == nivelMedio)
         {
-            spawn.tiempoSpawnBlanco = tiempoSpawnBlancoNormal;
-            spawn.cantidadItemBlanco = cantidadBlancoNormal;
-
-            spawn.tiempoSpawnRojo = tiempoSpawnRojoNormal;
-            spawn.cantidadItemRojo = cantidadRojoNormal;
+            spawn.cantidadEnPantallaBueno = buenoMedio;
+            spawn.cantidadEnPantallaMalo = maloMedio;
         }
-
-        if (controlador.puntuacion == cambiarDificultad * 3)
+        if (controlador.puntuacion == nivelDificil)
         {
-            spawn.tiempoSpawnBlanco = tiempoSpawnBlancoDificil;
-            spawn.cantidadItemBlanco = cantidadBlancoDificil;
-
-            spawn.tiempoSpawnRojo = tiempoSpawnRojoDificil;
-            spawn.cantidadItemRojo = cantidadRojoDificil;
+            spawn.cantidadEnPantallaBueno = buenoDificil;
+            spawn.cantidadEnPantallaMalo = maloDificil;
         }
     }
 }

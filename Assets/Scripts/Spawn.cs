@@ -5,48 +5,57 @@ using UnityEngine;
 public class Spawn : MonoBehaviour
 {
     public Transform[] pivot;
-    [Header("Circulo Blanco")]
-    public GameObject itemBlanco;
-    public float tiempoSpawnBlanco;
-    public int cantidadItemBlanco;
-    public bool activarBlanco;
-    [Header("Circulo Rojo")]
-    public GameObject itemRojo;
-    public float tiempoSpawnRojo;
-    public int cantidadItemRojo;
-    public bool activarRojo;
+    [Header("Bueno")]
+    public GameObject itemBueno;
+    public float tiempoSpawnBueno;
+    public int cantidadEnPantallaBueno;
+    public bool activarBueno;
+    [Header("Malo")]
+    public GameObject itemMalo;
+    public float tiempoSpawnMalo;
+    public int cantidadEnPantallaMalo;
+    public bool activarMalo;
 
     float t1, t2;
 
     void Start()
     {
-        t1 = tiempoSpawnBlanco;
-        t2 = tiempoSpawnRojo;
+        t1 = tiempoSpawnBueno;
+        t2 = tiempoSpawnMalo;
     }
 
     void Update()
     {
-        if (activarBlanco)
-        {
-            t1 += Time.deltaTime;
+        GameObject[] item1 = GameObject.FindGameObjectsWithTag("ItemBlanco");
+        GameObject[] item2 = GameObject.FindGameObjectsWithTag("ItemRojo");
 
-            if (t1 >= tiempoSpawnBlanco)
+        if (activarBueno)
+        {
+            if (item1.Length < cantidadEnPantallaBueno)
             {
-                int aleatorio = Random.Range(0, pivot.Length);
-                Instantiate(itemBlanco, pivot[aleatorio].position, Quaternion.identity);
-                t1 = 0;
-            }
+                t1 += Time.deltaTime;
+
+                if (t1 >= tiempoSpawnBueno)
+                {
+                    int aleatorio = Random.Range(0, pivot.Length);
+                    Instantiate(itemBueno, pivot[aleatorio].position, Quaternion.identity);
+                    t1 = 0;
+                }
+            }           
         }
-        if (activarRojo)
+        if (activarMalo)
         {
-            t2 += Time.deltaTime;
-
-            if (t2 >= tiempoSpawnRojo)
+            if (item2.Length < cantidadEnPantallaMalo)
             {
-                int aleatorio = Random.Range(0, pivot.Length);
-                Instantiate(itemRojo, pivot[aleatorio].position, Quaternion.identity);
-                t2 = 0;
-            }
+                t2 += Time.deltaTime;
+
+                if (t2 >= tiempoSpawnMalo)
+                {
+                    int aleatorio = Random.Range(0, pivot.Length);
+                    Instantiate(itemMalo, pivot[aleatorio].position, Quaternion.identity);
+                    t2 = 0;
+                }
+            }            
         }
     }
 }

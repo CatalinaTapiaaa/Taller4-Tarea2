@@ -21,7 +21,7 @@ public class GameplayUI : MonoBehaviour
         componente = GameObject.Find("CONTROLADOR");
         controlador = componente.GetComponent<Controlador>();
 
-        punInterface.text = controlador.puntuacion.ToString("0");
+        punInterface.text = controlador.puntuacion.ToString("LEVEL 0");
     }
 
     public void Pausar()

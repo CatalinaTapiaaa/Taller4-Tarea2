@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Linea : MonoBehaviour
 {
+    public PlayerManager playerManager;
+    public Puntaje pun;
     LineRenderer line;
     Transform[] points;
 
@@ -30,16 +32,11 @@ public class Linea : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("ItemBlanco"))
         {
-
+            pun.sumarPuntos = true;
         }
         if (collision.gameObject.CompareTag("ItemRojo"))
         {
-
-        }
-
-        if (collision.gameObject.CompareTag("Pared"))
-        {
-
+            playerManager.muerte = true;
         }
     }
 }

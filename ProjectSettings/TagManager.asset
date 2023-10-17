@@ -12,6 +12,8 @@ TagManager:
   - Pivots
   - Iz
   - De
+  - EliminarDe
+  - EliminarIz
   layers:
   - Default
   - TransparentFX
@@ -49,11 +51,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Transicicon
+    uniqueID: 2259145411
+    locked: 0
   - name: Player
     uniqueID: 2402143879
     locked: 0
-  - name: Lengua
-    uniqueID: 1023869991
+  - name: Moscas
+    uniqueID: 1587987801
     locked: 0
   - name: Interface
     uniqueID: 1373588555

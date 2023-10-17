@@ -9,12 +9,14 @@ namespace ControllerExperiment
         public GameObject item;
         public GameObject pivotComienzo;
         public float velocidad;
+        public bool enemigo, AutoTime;
+        public GameObject componente;
+        public PlayerManager playerManager;
         public List<GameObject> Pivots = new List<GameObject>();
 
         GameObject[] pivotsMedio, pivotsDe, pivotsIz;
         protected float mTime;
         protected Vector3 myPosition;
-        bool AutoTime = true;
         int aleatorioMedio, aleatorioDe, aleatorioIz;
         bool de, iz;
 
@@ -22,11 +24,14 @@ namespace ControllerExperiment
 
         void Awake()
         {
+            componente = GameObject.Find("PLAYER");
+            playerManager = componente.GetComponent<PlayerManager>();
+
             pivotsMedio = GameObject.FindGameObjectsWithTag("Pivots");
             pivotsDe = GameObject.FindGameObjectsWithTag("De");
             pivotsIz = GameObject.FindGameObjectsWithTag("Iz");
 
-            aleatorioMedio = Random.Range(5, pivotsMedio.Length);
+            aleatorioMedio = Random.Range(0, pivotsMedio.Length);
             aleatorioDe = Random.Range(0, pivotsDe.Length);
             aleatorioIz = Random.Range(0, pivotsIz.Length);
 
@@ -65,10 +70,20 @@ namespace ControllerExperiment
             StartCoroutine(Mover());
         }
 
+
         IEnumerator Mover()
         {
             while (true)
             {
+                if (playerManager.muerte)
+                {
+                    AutoTime = false;
+                }
+                else
+                {
+                    AutoTime = true;
+                }
+
                 if (AutoTime)
                 {
                     mTime += Time.deltaTime * velocidad;
@@ -87,12 +102,12 @@ namespace ControllerExperiment
                 yield return null;
             }
         }
-
+    
         void OnTriggerEnter2D(Collider2D collision)
         {
             if (de)
             {
-                if (collision.gameObject.CompareTag("Iz"))
+                if (collision.gameObject.CompareTag("EliminarIz"))
                 {
                     Destroy(item);
                     Destroy(pivotComienzo);
@@ -100,18 +115,21 @@ namespace ControllerExperiment
             }
             if (iz)
             {
-                if (collision.gameObject.CompareTag("De"))
+                if (collision.gameObject.CompareTag("EliminarDe"))
                 {
                     Destroy(item);
                     Destroy(pivotComienzo);
                 }
             }
 
-            if (collision.gameObject.CompareTag("Lengua"))
+            if (!enemigo)
             {
-                Destroy(item);
-                Destroy(pivotComienzo);
-            }
+                if (collision.gameObject.CompareTag("Lengua"))
+                {
+                    Destroy(item);
+                    Destroy(pivotComienzo);
+                }
+            }           
         }
     }
 }

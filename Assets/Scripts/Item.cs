@@ -53,17 +53,15 @@ namespace ControllerExperiment
 
         float GetLocalPercentage(float time)
         {
-            float remainder = time % subTotal; // Computes the remainder after dividing its left operand by its right operand
+            float remainder = time % subTotal; 
             float percentage = remainder / subTotal;
             return percentage;
         }
 
         int GetLocalStart(float time)
         {
-            // how many subtotals can fit inside passed time?
             int n = (int)(time / subTotal);
 
-            // convert to list index
             int index = n * (3 - 1);
 
             return index;

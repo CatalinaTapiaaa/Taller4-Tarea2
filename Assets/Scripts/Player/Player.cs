@@ -6,78 +6,74 @@ public class Player : MonoBehaviour
 {
     public Transform inicioLengua;
     public Transform finalLengua;
-    public SpriteRenderer spriteLengua;
     public Lengua lengua;
-    public TrailRenderer[] trails;
     [Space]
     public float velocidadAtaque;
-    public bool atacar, noAtacar;
+    public bool atacar, noAtacar, stop, gameOver;
 
     float tapTime;
-    float maxTapTime = 0.5f;
-
-    void Start()
-    {
-        foreach (TrailRenderer trail in trails)
-        {
-            trail.enabled = false;
-        }
-    }
+    float maxTapTime = 0.5f;  
 
     void Update()
     {
         finalLengua.rotation = inicioLengua.rotation;
 
-        if (atacar)
+        if (!gameOver)
         {
-            finalLengua.position += finalLengua.up * velocidadAtaque * Time.deltaTime;
-            lengua.enabled = true;
-            noAtacar = true;
-        }
-        if (!atacar)
-        {
-            finalLengua.position = Vector2.MoveTowards(finalLengua.position, inicioLengua.position, velocidadAtaque * Time.deltaTime);
-        }
-        if (noAtacar)
-        {
-            if (finalLengua.position == inicioLengua.position)
+            if (atacar)
             {
-                noAtacar = false;
+                finalLengua.position += finalLengua.up * velocidadAtaque * Time.deltaTime;
+                lengua.enabled = true;
+                noAtacar = true;
             }
-        }
-
-        if (Input.touchCount > 0)
-        {
-            Touch dedo = Input.GetTouch(0);
-
-            if (dedo.phase == TouchPhase.Began)
+            if (!atacar)
             {
-                tapTime = 0;
+                finalLengua.position = Vector2.MoveTowards(finalLengua.position, inicioLengua.position, velocidadAtaque * Time.deltaTime);
             }
-            else if (dedo.phase == TouchPhase.Ended)
+            if (noAtacar)
             {
-                if (tapTime < maxTapTime)
+                if (finalLengua.position == inicioLengua.position)
                 {
-                    Vector3 deltaPos = dedo.position;
-                    Vector3 inicio = deltaPos;
+                    noAtacar = false;
+                }
+            }
 
-                    if (deltaPos.magnitude > 10)
+            if (!stop)
+            {
+                if (Input.touchCount > 0)
+                {
+                    Touch dedo = Input.GetTouch(0);
+
+                    if (dedo.phase == TouchPhase.Began)
                     {
-                        if (!noAtacar)
+                        tapTime = 0;
+                    }
+                    else if (dedo.phase == TouchPhase.Ended)
+                    {
+                        if (tapTime < maxTapTime)
                         {
-                            Debug.Log("Tap");
+                            Vector3 deltaPos = dedo.position;
+                            Vector3 inicio = deltaPos;
 
-                            Vector3 dedoPosicion = inicio;
-                            dedoPosicion = Camera.main.ScreenToWorldPoint(dedoPosicion);
-                            Vector2 direccion = new Vector2(dedoPosicion.x - inicioLengua.position.x, dedoPosicion.y - inicioLengua.position.y);
-                            inicioLengua.up = direccion;
+                            if (deltaPos.magnitude > 10)
+                            {
+                                if (!noAtacar)
+                                {
+                                    Debug.Log("Tap");
 
-                            atacar = true;
+                                    Vector3 dedoPosicion = inicio;
+                                    dedoPosicion = Camera.main.ScreenToWorldPoint(dedoPosicion);
+                                    Vector2 direccion = new Vector2(dedoPosicion.x - inicioLengua.position.x, dedoPosicion.y - inicioLengua.position.y);
+                                    inicioLengua.up = direccion;
+
+                                    atacar = true;
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-    }
+    }        
 }
 
