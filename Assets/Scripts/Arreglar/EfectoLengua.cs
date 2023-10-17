@@ -5,7 +5,7 @@ using UnityEngine;
 public class EfectoLengua : MonoBehaviour
 {
     public Transform[] puntos;
-    public LineRendererController line;
+    public Linea line;
 
     void Start()
     {

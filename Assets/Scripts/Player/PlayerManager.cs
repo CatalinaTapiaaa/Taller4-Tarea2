@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public bool muerte;
-    public GameObject lineRenderer;
+    public Transform[] puntos;
+    public Linea line;
 
-    void Update()
+    void Start()
     {
-        if (muerte)
-        {
-            Destroy(gameObject);
-            Destroy(lineRenderer);
-        }
-    }
+        line.SetUpLine(puntos);
+    }   
 }

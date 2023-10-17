@@ -4,158 +4,72 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public LevelCreator levelCreator;
-    public Lengua lengua;
-    public Transform pivotPlayer;
-    public Transform pivotAtaque;
-
-    [Header("Salto")]
-    public float ancho;
-    public float largo;
+    public Transform inicioLengua;
+    public Transform finalLengua;
+    public SpriteRenderer lengua;
     [Space]
-    public float fuerzaSalto;
-    public float fuerzaSaltoMaximo;
     public float velocidadAtaque;
-    public bool stop, reiniciar;
+    public bool atacar, noAtacar;
 
-    Rigidbody2D rb2D;
-    Vector2 startPos;
-    float maxTapTime = 0.2f;
-    float tapTime, salto;
-    bool pressed;
-    public bool saltar, noSaltar, noAtacar;
+    float tapTime;
+    float maxTapTime = 0.5f;
 
     void Start()
     {
-        rb2D = GetComponent<Rigidbody2D>();
-        noSaltar = true;
+        lengua.enabled = false;
     }
 
     void Update()
     {
-        if (!stop)
+        finalLengua.rotation = inicioLengua.rotation;
+
+        if (atacar)
         {
-            if (Input.touchCount > 0)
-            {
-                Touch dedo = Input.GetTouch(0);
-
-                if (dedo.phase == TouchPhase.Began)
-                {
-                    tapTime = 0;
-                    pressed = true;
-                    startPos = dedo.position;
-                }
-                else if (dedo.phase == TouchPhase.Ended)
-                {
-                    pressed = false;
-                    pivotPlayer.localScale = new Vector2(1, 1);
-
-                    if (saltar)
-                    {
-                        Saltar();
-                        salto = 0;
-                        saltar = false;
-                        noSaltar = false;
-                        noAtacar = false;
-                    }
-
-                    if (tapTime < maxTapTime)
-                    {
-                        Vector3 deltaPos = dedo.position - startPos;
-
-                        if (deltaPos.magnitude > 10)
-                        {
-                            if (!noAtacar)
-                            {
-
-                                noAtacar = true;
-                                lengua.atacar = true;
-                            }
-
-                        }
-                    }
-                }
-
-                if (pressed)
-                {
-                    if (!noSaltar)
-                    {
-                        tapTime += Time.deltaTime;
-
-                        if (tapTime >= maxTapTime)
-                        {
-                            Debug.Log("Presionando");
-                            salto += Time.deltaTime;
-
-                            float escala = 0.1f * salto;
-                            float escalaX = Mathf.Min(ancho, pivotPlayer.localScale.x + escala);
-                            float escalaY = Mathf.Max(largo, pivotPlayer.localScale.y - escala);
-                            pivotPlayer.localScale = new Vector2(escalaX, escalaY);
-
-                            saltar = true;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    void Saltar()
-    {
-        noSaltar = true;
-
-        if (salto < fuerzaSaltoMaximo)
-        {
-            rb2D.velocity = Vector2.zero;
-            rb2D.AddForce(new Vector2(0, salto * fuerzaSalto));
-        }
-        if (salto >= fuerzaSaltoMaximo)
-        {
-            rb2D.velocity = Vector2.zero;
-            rb2D.AddForce(new Vector2(0, fuerzaSaltoMaximo * fuerzaSalto));
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
-
-        if (collision.gameObject.CompareTag("Piso"))
-        {
-            noSaltar = false;
+            finalLengua.position += finalLengua.up * velocidadAtaque * Time.deltaTime;
+            lengua.enabled = true;
             noAtacar = true;
-
-            if (reiniciar)
+        }
+        if (!atacar)
+        {
+            finalLengua.position = Vector2.MoveTowards(finalLengua.position, inicioLengua.position, velocidadAtaque * Time.deltaTime);
+        }
+        if (noAtacar)
+        {
+            if (finalLengua.position == inicioLengua.position)
             {
-                if (moscas.Length == 0)
-                {
-                    levelCreator.cerrarNivel = true;
-                    reiniciar = false;
-                }
+                lengua.enabled = false;
+                noAtacar = false;
             }
         }
-    }
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        GameObject[] moscas = GameObject.FindGameObjectsWithTag("Mosca");
 
-        if (collision.gameObject.CompareTag("Piso"))
+        if (Input.touchCount > 0)
         {
-            if (reiniciar)
+            Touch dedo = Input.GetTouch(0);
+
+            if (dedo.phase == TouchPhase.Began)
             {
-                if (moscas.Length == 0)
-                {
-                    levelCreator.cerrarNivel = true;
-                    reiniciar = false;
-                }
+                tapTime = 0;
             }
-        }
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Piso"))
-        {
-            noSaltar = true;
-        }
+
+            else if (dedo.phase == TouchPhase.Ended)
+            {
+                if (tapTime < maxTapTime)
+                {
+                    if (!noAtacar)
+                    {
+                        Debug.Log("Tap");
+
+                        Vector3 deltaPos = dedo.position;
+                        Vector3 inicio = deltaPos;
+                        Vector3 dedoPosicion = inicio;
+                        dedoPosicion = Camera.main.ScreenToWorldPoint(dedoPosicion);
+                        Vector2 direccion = new Vector2(dedoPosicion.x - inicioLengua.position.x, dedoPosicion.y - inicioLengua.position.y);
+                        inicioLengua.up = direccion;
+
+                        atacar = true;
+                    }                    
+                }
+            } 
+        }      
     }
 }

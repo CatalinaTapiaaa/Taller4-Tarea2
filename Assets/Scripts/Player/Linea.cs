@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LineRendererController : MonoBehaviour
+public class Linea : MonoBehaviour
 {
     LineRenderer line;
     Transform[] points;
@@ -24,6 +24,22 @@ public class LineRendererController : MonoBehaviour
             {
                 line.SetPosition(i, points[i].position);
             }
+        }
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("ItemBlanco"))
+        {
+
+        }
+        if (collision.gameObject.CompareTag("ItemRojo"))
+        {
+
+        }
+
+        if (collision.gameObject.CompareTag("Pared"))
+        {
+
         }
     }
 }

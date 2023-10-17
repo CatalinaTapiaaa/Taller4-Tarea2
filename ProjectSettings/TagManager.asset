@@ -5,10 +5,13 @@ TagManager:
   serializedVersion: 2
   tags:
   - Piso
-  - Mosca
-  - Pincho
   - Pared
   - Lengua
+  - ItemBlanco
+  - ItemRojo
+  - Pivots
+  - Iz
+  - De
   layers:
   - Default
   - TransparentFX

@@ -11,7 +11,6 @@ public class LevelCreator : MonoBehaviour
     public GameObject moscas;
     [Space]
     public BarraProgreso barraProgreso;
-    public Player player;
     public GameObject componente;
     public Controlador controlador;
     [Space]
@@ -60,7 +59,6 @@ public class LevelCreator : MonoBehaviour
            
             abrir = true;
             spawn = true;
-            player.stop = true;
             barraProgreso.activar = true;
             barraProgreso.todasMoscas = true;
             crearNivel = false;
@@ -73,7 +71,6 @@ public class LevelCreator : MonoBehaviour
         if (cerrarNivel)
         {
             cerrar = true;
-            player.stop = true;
             cerrarNivel = false;
         }
 
@@ -88,8 +85,6 @@ public class LevelCreator : MonoBehaviour
             if (pivotDe.position == abrirDe)
             {
                 abrir = false;
-                player.stop = false;
-                player.reiniciar = true;
             }
         }
         if (cerrar)
